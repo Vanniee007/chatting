@@ -45,7 +45,6 @@ const ButtonStyled = styled(Button)`
     width: 150px; /* Set a fixed width for buttons */
     color: black; /* Text color for the button */
     background-color: black; /* Button background color */
-    border: none; /* Remove border */
     align-items: 'left';
     &:hover {
         background-color: black; /* Darker shade on hover */
