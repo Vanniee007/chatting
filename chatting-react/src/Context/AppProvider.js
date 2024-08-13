@@ -10,6 +10,8 @@ export default function AppProvider({ children }) {
     const [isInviteMemberVisible, setIsInviteMemberVisible] = useState(false);
     const [isJoinRoomVisible, setIsJoinRoomVisible] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState('');
+    const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+
 
     const roomsCondition = React.useMemo(() => {
         return {
@@ -49,6 +51,7 @@ export default function AppProvider({ children }) {
             selectedRoomId, setSelectedRoomId,
             isInviteMemberVisible, setIsInviteMemberVisible,
             isJoinRoomVisible, setIsJoinRoomVisible,
+            isSidebarVisible, setIsSidebarVisible,
         }}>
             {children}
         </AppContext.Provider>

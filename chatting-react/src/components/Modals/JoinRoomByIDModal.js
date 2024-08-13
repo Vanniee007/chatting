@@ -36,7 +36,7 @@ export default function JoinRoomModal() {
                 message.error('Room not found.');
             }
         } catch (error) {
-            console.error('Error joining room:', error);
+            // console.error('Error joining room:', error);
             message.error('Failed to join the room.');
         }
     };

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Row, Col } from "antd";
 import UserInfo from "./UserInfo";
 import RoomList from "./RoomList";
@@ -11,6 +11,7 @@ height: 100vh;
 `;
 
 export default function Sidebar() {
+
     return <div>
         <SidebarStyled>
             <Row>

@@ -4,6 +4,7 @@ import styled from 'styled-components'
 import { auth, db } from '../../firebase/config';
 import { collection, onSnapshot } from 'firebase/firestore';
 import { AuthContext } from '../../Context/AuthProvider';
+import { LogoutOutlined } from '@ant-design/icons';
 
 const WrapperStyle = styled.div`
     display: flex;
@@ -40,7 +41,7 @@ export default function UserInfo() {
                 <Avatar src={photoURL}>{photoURL ? '' : displayName[0]}</Avatar>
                 <Typography.Text className='username'>{displayName}</Typography.Text>
             </div>
-            <Button ghost onClick={() => auth.signOut()}>Đăng xuất</Button>
+            <Button ghost onClick={() => auth.signOut()} icon={<LogoutOutlined />}>Đăng xuất</Button>
         </WrapperStyle>
     );
 }

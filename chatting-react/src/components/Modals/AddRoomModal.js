@@ -11,7 +11,7 @@ export default function AddRoomModal() {
 
 
     const handleOK = () => {
-        console.log("form", form.getFieldsValue()); // Retrieve form values
+        // console.log("form", form.getFieldsValue()); // Retrieve form values
         setIsAddRoomVisible(false);
         addDocument("rooms", { ...form.getFieldsValue(), members: [uid] })
         form.resetFields();

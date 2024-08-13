@@ -20,17 +20,17 @@ export default function Login() {
         //     providerId: user.providerId,
         // })
         const { _tokenResponse, user } = result;
-        console.log("user: ", user)
-        console.log("user info: ", {
-            displayName: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
-            uid: user.uid,
-            providerId: user.providerId,
-        })
+        // console.log("user: ", user)
+        // console.log("user info: ", {
+        // displayName: user.displayName,
+        //     email: user.email,
+        //         photoURL: user.photoURL,
+        //             uid: user.uid,
+        //                 providerId: user.providerId,
+        // })
 
         if (_tokenResponse?.isNewUser) {
-            console.log("New user added")
+            // console.log("New user added")
             addDocument('users', {
                 displayName: user.displayName,
                 email: user.email,

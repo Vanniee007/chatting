@@ -16,8 +16,9 @@ const PanelStyled = styled(Panel)`
 `;
 
 const LinkStyled = styled(Typography.Link)`
+    margin-left: 40px;
     display: block;
-    margin-bottom: 5px;
+    margin-top: 10px;
     color: black !important;
     font-weight: normal;
 
@@ -64,15 +65,15 @@ export default function RoomList() {
 
     return (
         <ContainerStyled>
-            <Collapse ghost defaultActiveKey={['1']}>
-                <PanelStyled header="Room list" key="1">
-                    {rooms.map(room => (
-                        <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>
-                            {room.name}
-                        </LinkStyled>
-                    ))}
-                </PanelStyled>
-            </Collapse>
+            {/* <Collapse ghost defaultActiveKey={['1']}> */}
+            {/* <PanelStyled header="Room list" key="1"> */}
+            {rooms.map(room => (
+                <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>
+                    {room.name}
+                </LinkStyled>
+            ))}
+            {/* </PanelStyled> */}
+            {/* </Collapse> */}
             <ButtonGroupStyled>
                 <ButtonStyled
                     ghost

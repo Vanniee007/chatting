@@ -95,14 +95,14 @@ export default function ChatWindow() {
     });
 
     form.resetFields(['message']);
+    setInputValue('');  // Clear the input value
 
     // focus to input again after submit
-    if (inputRef?.current) {
-      setTimeout(() => {
-        inputRef.current.focus();
-      });
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   };
+
 
   const condition = React.useMemo(
     () => ({

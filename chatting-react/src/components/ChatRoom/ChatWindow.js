@@ -99,7 +99,22 @@ export default function ChatWindow() {
         }),
         [selectedRoom.id]
     );
-    const messages = useFirestore("messages", condition, ['createdAt', 'asc'])
+    const messagesFromFirestore = useFirestore("messages", condition);
+
+    const messages = React.useMemo(() => {
+        return [...messagesFromFirestore].sort((a, b) => {
+            const dateA = a.createdAt
+                ? new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000)
+                : new Date(0); // Default to a very old date if createdAt is null
+
+            const dateB = b.createdAt
+                ? new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000)
+                : new Date(0); // Default to a very old date if createdAt is null
+
+            return dateA - dateB;
+        });
+    }, [messagesFromFirestore]);
+
 
     const handleUpload = ({ file }) => {
         if (!file) return;
@@ -117,10 +132,10 @@ export default function ChatWindow() {
                 const progress = Math.round(
                     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
                 );
-                console.log(`Upload is ${progress}% done`);
+                // console.log(`Upload is ${progress}% done`);
             },
             (error) => {
-                console.error("Upload failed:", error);
+                // console.error("Upload failed:", error);
             },
             () => {
                 // Get the download URL and store it in Firestore
@@ -138,13 +153,14 @@ export default function ChatWindow() {
         );
     };
 
-
     useEffect(() => {
         if (messageListRef?.current) {
             messageListRef.current.scrollTop =
                 messageListRef.current.scrollHeight + 50;
         }
     }, [messages]);
+    let previousDate = null;
+
     return <WrapperStyle>
         {
             selectedRoom.id ? (
@@ -174,17 +190,33 @@ export default function ChatWindow() {
                     </HeaderStyled>
                     <ContentStyled>
                         <MessageListStyled ref={messageListRef}>
-                            {messages
-                                .map((mes) => (
+                            {messages.map((mes) => {
+                                const { text, displayName, createdAt, photoURL, fileURL, uid, id } = mes;
+                                const currentDate = createdAt?.seconds;
+                                const previousDate_ = previousDate;
+
+                                // Tạo đối tượng messageProps với previousDate
+                                const messageProps = {
+                                    text,
+                                    displayName,
+                                    createdAt,
+                                    photoURL,
+                                    fileURL,
+                                    uid,
+                                    previousDate
+                                };
+
+                                // Cập nhật previousDate cho lần lặp tiếp theo
+
+                                previousDate = currentDate;
+                                // previousDate_ = previousDate;
+                                return (
                                     <Message
-                                        key={mes.id}
-                                        text={mes.text}
-                                        photoURL={mes.photoURL}
-                                        displayName={mes.displayName}
-                                        createdAt={mes.createdAt}
-                                        fileURL={mes.fileURL}
+                                        key={id}
+                                        {...messageProps}
                                     />
-                                ))}
+                                );
+                            })}
                         </MessageListStyled>
                         <FormStyled form={form}>
                             <Upload style={{ border: '10px' }}
