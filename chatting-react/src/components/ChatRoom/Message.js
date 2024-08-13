@@ -45,9 +45,9 @@ const WrapperStyled = styled.div`
 
     .message-content {
         margin-left: 0px;
-        padding: 6px;
+        padding: 5px;
         border: 1px solid #dcdcdc;
-        border-radius: 8px; 
+        border-radius: 12px; 
         background-color: #f8f9f9; 
         max-width: 60%; 
         text-align: ${(props) => (props.isCurrentUser ? 'right' : 'left')};
@@ -69,31 +69,50 @@ function formatDate(seconds) {
     return formattedDate;
 }
 
-export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: messageUid, previousDate }) {
+export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor }) {
     const { uid } = useContext(AuthContext)
-    const isCurrentUser = uid === messageUid;
+    const isCurrentUser = uid === author;
     const currentDate = createdAt?.seconds;
     const showDate = previousDate !== currentDate;
-    console.log({ createdAt });
-    console.log({ previousDate });
+    // console.log({ createdAt });
+    // console.log({ previousDate });
+    console.log(author, nextAuthor)
 
     return (
         <WrapperStyled isCurrentUser={isCurrentUser}>
             {/* <div className='author-date'> */}
-            {formatDate(createdAt?.seconds) != formatDate(previousDate)
-                ?
-                (<Typography.Text className='date'>
-                    {formatDate(createdAt?.seconds)}
-                </Typography.Text>)
-                : ""
+            {
+                // formatDate(createdAt?.seconds) != formatDate(previousDate)
+                (createdAt?.seconds - previousDate >= 180)
+                    ?
+                    (<div>
+
+                        <Typography.Text className='date'>
+                            {formatDate(createdAt?.seconds)}
+                        </Typography.Text>
+                        <Typography.Text className='author'>{displayName}</Typography.Text>
+                    </div>)
+                    : ("")
             }
 
-            <Typography.Text className='author'>{displayName}</Typography.Text>
             {/* </div> */}
             <div className='message-container'>
-                <Avatar src={photoURL} style={{ marginRight: '10px' }}>
-                    {photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}
-                </Avatar>
+                {(author != uid && !(createdAt?.seconds - previousDate >= 180))
+                    ?
+                    (<Avatar src={photoURL} style={{ margin: '0px 5px' }}>
+                        {photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}
+                    </Avatar>)
+                    : (
+                        author == uid ?
+                            (< div style={{ margin: '0px ' }}>
+                            </div>)
+                            :
+                            (< div style={{ margin: '0px 21.5px' }}>
+                            </div>)
+
+
+                    )}
+
                 <div className='message-content'>
                     <div className='content'>
                         <Tooltip title={formatDate(createdAt?.seconds)}>
@@ -109,6 +128,6 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
                     </div>
                 </div>
             </div>
-        </WrapperStyled>
+        </WrapperStyled >
     );
 }

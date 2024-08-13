@@ -153,6 +153,7 @@ export default function ChatWindow() {
         );
     };
 
+    console.log(messages)
     useEffect(() => {
         if (messageListRef?.current) {
             messageListRef.current.scrollTop =
@@ -190,12 +191,14 @@ export default function ChatWindow() {
                     </HeaderStyled>
                     <ContentStyled>
                         <MessageListStyled ref={messageListRef}>
-                            {messages.map((mes) => {
+                            {messages.map((mes, index) => {
                                 const { text, displayName, createdAt, photoURL, fileURL, uid, id } = mes;
                                 const currentDate = createdAt?.seconds;
-                                const previousDate_ = previousDate;
 
-                                // Tạo đối tượng messageProps với previousDate
+                                // Lấy tác giả của tin nhắn tiếp theo nếu tồn tại
+                                const nextAuthor = messages[index + 1]?.uid || null;
+
+                                // Tạo đối tượng messageProps với previousDate và nextAuthor
                                 const messageProps = {
                                     text,
                                     displayName,
@@ -203,13 +206,14 @@ export default function ChatWindow() {
                                     photoURL,
                                     fileURL,
                                     uid,
-                                    previousDate
+                                    previousDate,
+                                    nextAuthor,
+                                    id
                                 };
 
                                 // Cập nhật previousDate cho lần lặp tiếp theo
-
                                 previousDate = currentDate;
-                                // previousDate_ = previousDate;
+
                                 return (
                                     <Message
                                         key={id}
