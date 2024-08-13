@@ -1,5 +1,5 @@
-import { UserAddOutlined } from "@ant-design/icons";
-import { Alert, Avatar, Button, Form, Input, Tooltip } from "antd";
+import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
+import { Alert, Avatar, Button, Form, Input, Tooltip, Upload } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Message from "./Message";
@@ -7,6 +7,8 @@ import { AppContext } from "../../Context/AppProvider";
 import { addDocument } from "../../firebase/service.";
 import { AuthContext } from "../../Context/AuthProvider";
 import useFirestore from "../../hooks/useFirestore";
+import { storage } from "../../firebase/config";
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 
 const WrapperStyle = styled.div`
     height: 100vh;
@@ -59,6 +61,7 @@ const FormStyled = styled(Form)`
         flex: 1;
         margin: 0;
     }
+    border: 0px;
 `;
 
 const MessageListStyled = styled.div`
@@ -96,7 +99,46 @@ export default function ChatWindow() {
         }),
         [selectedRoom.id]
     );
-    const messages = useFirestore("messages", condition)
+    const messages = useFirestore("messages", condition, ['createdAt', 'asc'])
+
+    const handleUpload = ({ file }) => {
+        if (!file) return;
+
+        // Create a storage reference
+        const storageRef = ref(storage, `/files/${file.name}`);
+
+        // Upload the file
+        const uploadTask = uploadBytesResumable(storageRef, file);
+
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                // Progress function, if you want to display progress
+                const progress = Math.round(
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                console.log(`Upload is ${progress}% done`);
+            },
+            (error) => {
+                console.error("Upload failed:", error);
+            },
+            () => {
+                // Get the download URL and store it in Firestore
+                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+                    addDocument('messages', {
+                        text: file.name,
+                        uid,
+                        photoURL,
+                        roomId: selectedRoom.id,
+                        displayName,
+                        fileURL: url, // Store the file URL
+                    });
+                });
+            }
+        );
+    };
+
+
     useEffect(() => {
         if (messageListRef?.current) {
             messageListRef.current.scrollTop =
@@ -132,18 +174,26 @@ export default function ChatWindow() {
                     </HeaderStyled>
                     <ContentStyled>
                         <MessageListStyled ref={messageListRef}>
-                            {messages.map((mes) => (
-                                <Message
-                                    key={mes.id}
-                                    text={mes.text}
-                                    photoURL={mes.photoURL}
-                                    displayName={mes.displayName}
-                                    createdAt={mes.createdAt}
-                                />
-                            ))}
+                            {messages
+                                .map((mes) => (
+                                    <Message
+                                        key={mes.id}
+                                        text={mes.text}
+                                        photoURL={mes.photoURL}
+                                        displayName={mes.displayName}
+                                        createdAt={mes.createdAt}
+                                        fileURL={mes.fileURL}
+                                    />
+                                ))}
                         </MessageListStyled>
                         <FormStyled form={form}>
-                            <Form.Item name="message">
+                            <Upload style={{ border: '10px' }}
+                                customRequest={handleUpload}
+                                showUploadList={false}
+                            >
+                                <Button icon={<UploadOutlined />}></Button>
+                            </Upload>
+                            <Form.Item name="message" style={{ margin: '0px 5px 0px 5px ' }}>
                                 <Input
                                     ref={inputRef}
                                     onChange={handleInputChange}
@@ -151,6 +201,7 @@ export default function ChatWindow() {
                                     placeholder="Type message"
                                     autoComplete="off" />
                             </Form.Item>
+
                             <Button onClick={handleOnSubmit}>Send</Button>
                         </FormStyled>
                     </ContentStyled>

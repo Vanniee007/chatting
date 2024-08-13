@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, where, orderBy, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, orderBy } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
 const useFirestore = (collectionName, condition) => {
@@ -12,7 +12,8 @@ const useFirestore = (collectionName, condition) => {
         if (condition) {
             if (condition.compareValue && condition.compareValue.length) {
                 q = query(collectionRef,
-                    where(condition.fieldName, condition.operator, condition.compareValue)
+                    where(condition.fieldName, condition.operator, condition.compareValue),
+                    // orderBy('createdAt', 'asc'),
                 );
             } else {
                 return;
