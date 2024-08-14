@@ -197,6 +197,7 @@ export default function ChatWindow() {
 
                                 // Lấy tác giả của tin nhắn tiếp theo nếu tồn tại
                                 const nextAuthor = messages[index + 1]?.uid || null;
+                                const nextDate = messages[index + 1]?.createdAt || null;
 
                                 // Tạo đối tượng messageProps với previousDate và nextAuthor
                                 const messageProps = {
@@ -208,6 +209,7 @@ export default function ChatWindow() {
                                     uid,
                                     previousDate,
                                     nextAuthor,
+                                    nextDate,
                                     id
                                 };
 

@@ -69,7 +69,7 @@ function formatDate(seconds) {
     return formattedDate;
 }
 
-export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor }) {
+export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor, nextDate }) {
     const { uid } = useContext(AuthContext)
     const isCurrentUser = uid === author;
     const currentDate = createdAt?.seconds;
@@ -97,20 +97,20 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
 
             {/* </div> */}
             <div className='message-container'>
-                {(author != uid && !(createdAt?.seconds - previousDate >= 180))
+                {(author != uid && !(author == nextAuthor && (nextDate?.seconds - createdAt?.seconds < 180)))
                     ?
-                    (<Avatar src={photoURL} style={{ margin: '0px 5px' }}>
-                        {photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}
-                    </Avatar>)
-                    : (
+                    (
+
+                        <Avatar src={photoURL} style={{ margin: '0px 5px' }}>
+                            {photoURL ? '' : displayName?.charAt(0)?.toUpperCase()}
+                        </Avatar>
+                    )
+                    :
+                    (
                         author == uid ?
-                            (< div style={{ margin: '0px ' }}>
-                            </div>)
+                            (< div style={{ margin: '0px ' }}></div>)
                             :
-                            (< div style={{ margin: '0px 21.5px' }}>
-                            </div>)
-
-
+                            (< div style={{ margin: '0px 21.5px' }}></div>)
                     )}
 
                 <div className='message-content'>
