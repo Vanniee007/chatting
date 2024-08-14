@@ -73,10 +73,6 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
     const { uid } = useContext(AuthContext)
     const isCurrentUser = uid === author;
     const currentDate = createdAt?.seconds;
-    const showDate = previousDate !== currentDate;
-    // console.log({ createdAt });
-    // console.log({ previousDate });
-    console.log(author, nextAuthor)
 
     return (
         <WrapperStyled isCurrentUser={isCurrentUser}>
@@ -92,7 +88,7 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
                         </Typography.Text>
                         <Typography.Text className='author'>{displayName}</Typography.Text>
                     </div>)
-                    : ("")
+                    : (< div style={{ margin: '0px' }}></div>)
             }
 
             {/* </div> */}
@@ -126,7 +122,19 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
                         </Tooltip>
 
                     </div>
+
                 </div>
+
+                {
+                    (author != nextAuthor) ?
+                        (
+                            (< div style={{ margin: '15px ' }}>
+                                <p></p>
+                            </div>)
+
+                        )
+                        : ("")
+                }
             </div>
         </WrapperStyled >
     );
