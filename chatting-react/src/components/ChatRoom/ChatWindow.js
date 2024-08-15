@@ -65,7 +65,7 @@ const FormStyled = styled(Form)`
 `;
 
 const MessageListStyled = styled.div`
-    margin: 10px;
+    margin: 0px;
     overflow-y: scroll;
     max-height: 100%;
 `;
@@ -102,16 +102,20 @@ export default function ChatWindow() {
     const messagesFromFirestore = useFirestore("messages", condition);
 
     const messages = React.useMemo(() => {
+        console.log({ messagesFromFirestore });
+
         return [...messagesFromFirestore].sort((a, b) => {
-            const dateA = a.createdAt
-                ? new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000)
-                : new Date(0); // Default to a very old date if createdAt is null
+            return (a.createdAt?.seconds * 1000 + a.createdAt?.nanoseconds / 1000000)
+                - (b.createdAt?.seconds * 1000 + b.createdAt?.nanoseconds / 1000000);
+            // const dateA = a.createdAt
+            //     ? new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000)
+            //     : new Date(0); // Default to a very old date if createdAt is null
 
-            const dateB = b.createdAt
-                ? new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000)
-                : new Date(0); // Default to a very old date if createdAt is null
+            // const dateB = b.createdAt
+            //     ? new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000)
+            //     : new Date(0); // Default to a very old date if createdAt is null
 
-            return dateA - dateB;
+            // return dateA - dateB;
         });
     }, [messagesFromFirestore]);
 
@@ -129,9 +133,9 @@ export default function ChatWindow() {
             "state_changed",
             (snapshot) => {
                 // Progress function, if you want to display progress
-                const progress = Math.round(
-                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                );
+                // const progress = Math.round(
+                //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                // );
                 // console.log(`Upload is ${progress}% done`);
             },
             (error) => {
@@ -161,6 +165,7 @@ export default function ChatWindow() {
         }
     }, [messages]);
     let previousDate = null;
+    let previousAuthor = null;
 
     return <WrapperStyle>
         {
@@ -194,6 +199,7 @@ export default function ChatWindow() {
                             {messages.map((mes, index) => {
                                 const { text, displayName, createdAt, photoURL, fileURL, uid, id } = mes;
                                 const currentDate = createdAt?.seconds;
+                                const currentAuthor = uid;
 
                                 // Lấy tác giả của tin nhắn tiếp theo nếu tồn tại
                                 const nextAuthor = messages[index + 1]?.uid || null;
@@ -210,11 +216,13 @@ export default function ChatWindow() {
                                     previousDate,
                                     nextAuthor,
                                     nextDate,
-                                    id
+                                    id,
+                                    previousAuthor
                                 };
 
                                 // Cập nhật previousDate cho lần lặp tiếp theo
                                 previousDate = currentDate;
+                                previousAuthor = currentAuthor;
 
                                 return (
                                     <Message

@@ -15,7 +15,9 @@ const WrapperStyle = styled.div`
 
     .username {
         color: black;
-        margin-left: 5px
+        margin-left: 5px;
+        font-size: medium;
+        font-weight: bold;
     }
 `;
 export default function UserInfo() {
@@ -41,7 +43,7 @@ export default function UserInfo() {
                 <Avatar src={photoURL}>{photoURL ? '' : displayName[0]}</Avatar>
                 <Typography.Text className='username'>{displayName}</Typography.Text>
             </div>
-            <Button ghost onClick={() => auth.signOut()} icon={<LogoutOutlined />}>Đăng xuất</Button>
+            <Button ghost onClick={() => auth.signOut()} icon={<LogoutOutlined />}>Log out</Button>
         </WrapperStyle>
     );
 }

@@ -6,7 +6,7 @@ import { AuthContext } from '../../Context/AuthProvider';
 
 const WrapperStyled = styled.div`
     margin-bottom: 0px;
-    padding: 5px;
+    padding: 2px;
     /* background-color:red; */
     
     .author-date {
@@ -23,8 +23,8 @@ const WrapperStyled = styled.div`
         margin-left: 45px; 
         text-align: ${(props) => (props.isCurrentUser ? 'right' : 'left')};
    
-        font-weight: bold;
-        font-size: small;
+        font-weight: lighter;
+        font-size: smaller;
         display: ${(props) => (props.isCurrentUser ? 'none' : 'block')}
     }
 
@@ -69,31 +69,34 @@ function formatDate(seconds) {
     return formattedDate;
 }
 
-export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor, nextDate }) {
+export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor, nextDate, previousAuthor }) {
     const { uid } = useContext(AuthContext)
     const isCurrentUser = uid === author;
-    const currentDate = createdAt?.seconds;
+    // const currentDate = createdAt?.seconds;
 
     return (
         <WrapperStyled isCurrentUser={isCurrentUser}>
             {/* <div className='author-date'> */}
             {
                 // formatDate(createdAt?.seconds) != formatDate(previousDate)
-                (createdAt?.seconds - previousDate >= 180)
+                (previousAuthor !== author || (createdAt?.seconds - previousDate >= 180))
                     ?
-                    (<div>
+                    (
+                        <div>
+                            {(createdAt?.seconds - previousDate >= 180) ?
+                                <Typography.Text className='date'>
+                                    {formatDate(createdAt?.seconds)}
+                                </Typography.Text> : ""}
 
-                        <Typography.Text className='date'>
-                            {formatDate(createdAt?.seconds)}
-                        </Typography.Text>
-                        <Typography.Text className='author'>{displayName}</Typography.Text>
-                    </div>)
+                            <Typography.Text className='author'>{displayName}</Typography.Text>
+                        </div>
+                    )
                     : (< div style={{ margin: '0px' }}></div>)
             }
 
             {/* </div> */}
             <div className='message-container'>
-                {(author != uid && !(author == nextAuthor && (nextDate?.seconds - createdAt?.seconds < 180)))
+                {(author !== uid && !(author === nextAuthor && (nextDate?.seconds - createdAt?.seconds < 180)))
                     ?
                     (
 
@@ -103,7 +106,7 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
                     )
                     :
                     (
-                        author == uid ?
+                        author === uid ?
                             (< div style={{ margin: '0px ' }}></div>)
                             :
                             (< div style={{ margin: '0px 21.5px' }}></div>)
@@ -126,7 +129,7 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
                 </div>
 
                 {
-                    (author != nextAuthor) ?
+                    (author !== nextAuthor) ?
                         (
                             (< div style={{ margin: '15px ' }}>
                                 <p></p>
