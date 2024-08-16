@@ -4,11 +4,12 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import Message from "./Message";
 import { AppContext } from "../../Context/AppProvider";
-import { addDocument } from "../../firebase/service.";
+import { addDocument, updateDocument, uploadFile } from "../../firebase/service.";
 import { AuthContext } from "../../Context/AuthProvider";
 import useFirestore from "../../hooks/useFirestore";
-import { storage } from "../../firebase/config";
+import { db, storage } from "../../firebase/config";
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { doc, updateDoc } from "firebase/firestore";
 
 const WrapperStyle = styled.div`
     height: 100vh;
@@ -82,17 +83,30 @@ export default function ChatWindow() {
     const messageListRef = useRef(null);
     const [form] = Form.useForm()
     const handleOnSubmit = () => {
-        addDocument('messages', {
-            text: inputValue,
-            uid,
-            photoURL,
-            roomId: selectedRoom.id,
-            displayName
-        })
-        form.resetFields(['message'])
+        // Tạo đối tượng tin nhắn mới
+        const newMessage = {
+            text: inputValue, // Nội dung tin nhắn
+            uid, // ID người dùng
+            photoURL, // URL ảnh đại diện của người dùng
+            roomId: selectedRoom.id, // ID của phòng chat
+            displayName // Tên hiển thị của người dùng
+        };
 
-        inputRef.current.focus()
-    }
+        // Thêm tin nhắn mới vào collection 'messages'
+        addDocument('messages', newMessage);
+
+        // Reset trường nhập liệu 'message' trong form
+        form.resetFields(['message']);
+
+        // Cập nhật tin nhắn cuối cùng trong phòng chat
+        updateDocument('rooms', selectedRoom.id, { lastestMessage: newMessage })
+        // const roomRef = doc(db, 'rooms', selectedRoom.id);
+        // updateDoc(roomRef, { lastestMessage: newMessage });
+
+        // Đặt focus trở lại ô nhập liệu
+        inputRef.current.focus();
+    };
+
     const condition = React.useMemo(
         () => ({
             fieldName: 'roomId',
@@ -122,41 +136,63 @@ export default function ChatWindow() {
     }, [messagesFromFirestore]);
 
 
-    const handleUpload = ({ file }) => {
-        if (!file) return;
+    const handleUpload = async ({ file }) => {
+        const fileURLurl = await uploadFile(file)
+        const isPhoto = file.type.startsWith('image/');
 
-        // Create a storage reference
-        const storageRef = ref(storage, `/files/${file.name}`);
 
-        // Upload the file
-        const uploadTask = uploadBytesResumable(storageRef, file);
+        addDocument('messages', {
+            text: file.name,
+            uid,
+            photoURL,
+            roomId: selectedRoom.id,
+            displayName,
+            fileURL: fileURLurl, // Store the file URL
+            isPhoto: isPhoto,
+        });
+        // updateDocument('rooms', selectedRoom.id, { lastestMessage: newMessage })
 
-        uploadTask.on(
-            "state_changed",
-            (snapshot) => {
-                // Progress function, if you want to display progress
-                // const progress = Math.round(
-                //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-                // );
-                // console.log(`Upload is ${progress}% done`);
-            },
-            (error) => {
-                // console.error("Upload failed:", error);
-            },
-            () => {
-                // Get the download URL and store it in Firestore
-                getDownloadURL(uploadTask.snapshot.ref).then((url) => {
-                    addDocument('messages', {
-                        text: file.name,
-                        uid,
-                        photoURL,
-                        roomId: selectedRoom.id,
-                        displayName,
-                        fileURL: url, // Store the file URL
-                    });
-                });
+        updateDocument("rooms", selectedRoom.id, {
+            lastestMessage: {
+                text: file.name,
+                displayName,
             }
-        );
+        })
+
+        // if (!file) return;
+
+        // // Create a storage reference
+        // const storageRef = ref(storage, `/files/${file.name}`);
+
+        // // Upload the file
+        // const uploadTask = uploadBytesResumable(storageRef, file);
+
+        // uploadTask.on(
+        //     "state_changed",
+        //     (snapshot) => {
+        //         // Progress function, if you want to display progress
+        //         // const progress = Math.round(
+        //         //     (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        //         // );
+        //         // console.log(`Upload is ${progress}% done`);
+        //     },
+        //     (error) => {
+        //         // console.error("Upload failed:", error);
+        //     },
+        //     () => {
+        //         // Get the download URL and store it in Firestore
+        //         getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+        //             addDocument('messages', {
+        //                 text: file.name,
+        //                 uid,
+        //                 photoURL,
+        //                 roomId: selectedRoom.id,
+        //                 displayName,
+        //                 fileURL: url, // Store the file URL
+        //             });
+        //         });
+        //     }
+        // );
     };
 
     console.log(messages)
@@ -199,7 +235,7 @@ export default function ChatWindow() {
                     <ContentStyled>
                         <MessageListStyled ref={messageListRef}>
                             {messages.map((mes, index) => {
-                                const { text, displayName, createdAt, photoURL, fileURL, uid, id } = mes;
+                                const { isPhoto, text, displayName, createdAt, photoURL, fileURL, uid, id } = mes;
                                 const currentDate = createdAt?.seconds;
                                 const currentAuthor = uid;
 
@@ -209,6 +245,7 @@ export default function ChatWindow() {
 
                                 // Tạo đối tượng messageProps với previousDate và nextAuthor
                                 const messageProps = {
+                                    isPhoto,
                                     text,
                                     displayName,
                                     createdAt,

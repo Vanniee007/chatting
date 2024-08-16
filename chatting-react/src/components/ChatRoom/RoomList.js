@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { Button, Typography } from 'antd';
+import { Avatar, Button, Typography } from 'antd';
 import styled from 'styled-components';
 import { LogoutOutlined, PlusSquareOutlined, UsergroupAddOutlined } from '@ant-design/icons';
 import { AppContext } from '../../Context/AppProvider';
@@ -10,7 +10,7 @@ const LinkStyled = styled(Typography.Link)`
     color: ${props => props.isSelected ? 'white' : 'black'} !important;
     font-weight: normal;
     background-color: ${props => props.isSelected ? 'lightblue' : 'transparent'};
-    padding: 10px;
+    padding: 5px;
     width: 100%;
 
     &:hover {
@@ -19,17 +19,34 @@ const LinkStyled = styled(Typography.Link)`
     }
 `;
 
+
 const ContainerStyled = styled.div`
-    margin: 0;
+    height:calc(100vh - 105px);
+`;
+
+const RoomListContainer = styled.div`
     display: flex;
-    height:calc(100vh - 110px);
+    height:100%;
+    width: 100%;
+    overflow-y: scroll;
+
     flex-direction: column;
     align-items: flex-start; /* Align items to the left */
 `;
 
-const RoomInfoStyled = styled.div`
-    margin-left: 40px;
+const AvatarStyled = styled(Avatar)`
+margin: 2px 10px;
+    width: 45px; 
+    height: 45px;
+    /* padding:5px; */
 `;
+
+const RoomInfoStyled = styled.div`
+  display: flex; /* Use flexbox layout */
+    align-items: center; /* Center items vertically */
+    /* margin-left: 20px; Adjust margin as needed */
+    
+    `;
 
 const ButtonGroupStyled = styled.div`
     /* margin-top: 20px; */
@@ -61,7 +78,6 @@ const MessagePreviewStyled = styled.div`
 
 export default function RoomList() {
     const { rooms, setIsAddRoomVisible, setIsJoinRoomVisible, setSelectedRoomId, selectedRoomId } = useContext(AppContext); // Access state from context
-
     const handleAddRoom = () => {
         setIsAddRoomVisible(true);
     };
@@ -69,13 +85,13 @@ export default function RoomList() {
     const handleJoinRoom = () => {
         setIsJoinRoomVisible(true);
     };
-    console.log(rooms);
+    // const { text, displayName } = rooms.latestMessage;
 
 
     return (
-        <div>
+        <ContainerStyled>
 
-            <ContainerStyled>
+            <RoomListContainer>
                 {rooms.map(room => (
                     <LinkStyled
                         key={room.id}
@@ -83,13 +99,24 @@ export default function RoomList() {
                         isSelected={room.id === selectedRoomId}
                     >
                         <RoomInfoStyled>
-                            <Typography.Text strong>{room.name}</Typography.Text>
-                            <MessagePreviewStyled>{room.description || 'No messages yet'}</MessagePreviewStyled>
+                            <AvatarStyled src="https://lh3.googleusercontent.com/a/ACg8ocLXtZr3zNjkfozZfF3MkHzTEk1IVx84unlBK_C6i01YLQRAzJbJ=s96-c">
+                            </AvatarStyled>
+                            <div>
+                                <Typography.Text strong>{room.name}</Typography.Text>
+
+                                {room.lastestMessage ?
+                                    (
+                                        <MessagePreviewStyled>{room.lastestMessage.displayName}: {room.lastestMessage.text}</MessagePreviewStyled>
+                                    ) :
+                                    (
+                                        <MessagePreviewStyled>No messages yet</MessagePreviewStyled>
+                                    )
+                                }
+                            </div>
                         </RoomInfoStyled>
                     </LinkStyled>
                 ))}
-            </ContainerStyled>
-
+            </RoomListContainer>
             <ButtonGroupStyled>
                 <ButtonStyled
                     ghost
@@ -114,7 +141,9 @@ export default function RoomList() {
                 </ButtonStyled>
 
             </ButtonGroupStyled>
-        </div>
+
+
+        </ContainerStyled >
 
     );
 }

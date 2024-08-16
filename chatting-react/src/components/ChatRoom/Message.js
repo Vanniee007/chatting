@@ -1,4 +1,4 @@
-import { Avatar, Tooltip, Typography } from 'antd';
+import { Avatar, Image, Tooltip, Typography } from 'antd';
 import { formatRelative } from 'date-fns';
 import React, { useContext } from 'react';
 import styled from 'styled-components';
@@ -69,7 +69,7 @@ function formatDate(seconds) {
     return formattedDate;
 }
 
-export default function Message({ text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor, nextDate, previousAuthor }) {
+export default function Message({ isPhoto, text, displayName, createdAt, photoURL, fileURL, uid: author, previousDate, nextAuthor, nextDate, previousAuthor }) {
     const { uid } = useContext(AuthContext)
     const isCurrentUser = uid === author;
     // const currentDate = createdAt?.seconds;
@@ -115,13 +115,27 @@ export default function Message({ text, displayName, createdAt, photoURL, fileUR
                 <div className='message-content'>
                     <div className='content'>
                         <Tooltip title={formatDate(createdAt?.seconds)}>
-                            {fileURL ? (
-                                <Typography.Link href={fileURL} target="_blank">
-                                    {text || 'Download File'}
-                                </Typography.Link>
-                            ) : (
-                                <Typography.Text>{text}</Typography.Text>
-                            )}
+
+                            {isPhoto ?
+                                (
+                                    <Image
+                                        src={fileURL}
+                                        alt={text || 'Image preview'}
+                                        // preview={false} // Nếu không muốn hiển thị ảnh lớn hơn khi nhấp vào
+                                        style={{ maxWidth: '100%', maxHeight: '300px' }} // Thay đổi kích thước ảnh nếu cần
+                                    />
+                                ) :
+                                (
+                                    fileURL ? (
+                                        <Typography.Link href={fileURL} target="_blank" >
+                                            {text || 'Download File'
+                                            }
+                                        </Typography.Link>
+                                    ) : (
+                                        <Typography.Text>{text}</Typography.Text>
+                                    )
+                                )
+                            }
                         </Tooltip>
 
                     </div>
