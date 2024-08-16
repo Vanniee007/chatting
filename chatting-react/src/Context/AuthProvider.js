@@ -10,7 +10,7 @@ export default function AuthProvider({ children }) {
     const [isLoading, setIsLoading] = useState(true)
     React.useEffect(() => {
         const unsubcibed = auth.onAuthStateChanged((user) => {
-            // console.log(user)
+            // console.log({ user })
             if (user) {
                 const { displayName, email, photoURL, uid } = user
                 setUser({ displayName, email, photoURL, uid })

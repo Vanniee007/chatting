@@ -5,8 +5,8 @@ import RoomList from "./RoomList";
 import styled from "styled-components";
 
 const SidebarStyled = styled.div`
-background-color: #1572A1;
-color: white;
+    background-color: #f5f5f5;
+    color: white;
 height: 100vh;
 `;
 

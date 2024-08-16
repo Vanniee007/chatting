@@ -54,7 +54,7 @@ const FormStyled = styled(Form)`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px;
+    padding: px;
     border: 1px solid rgb(230,230,230);
 
     .ant-form-item{
@@ -62,6 +62,7 @@ const FormStyled = styled(Form)`
         margin: 0;
     }
     border: 0px;
+    /* height: 20px; */
 `;
 
 const MessageListStyled = styled.div`
@@ -89,6 +90,7 @@ export default function ChatWindow() {
             displayName
         })
         form.resetFields(['message'])
+
         inputRef.current.focus()
     }
     const condition = React.useMemo(

@@ -12,6 +12,7 @@ const WrapperStyle = styled.div`
     padding: 12px 16px;
     border-bottom: 1px solid;
     /* color: black; */
+    background-color: #1572A1;
 
     .username {
         color: black;
@@ -43,7 +44,6 @@ export default function UserInfo() {
                 <Avatar src={photoURL}>{photoURL ? '' : displayName[0]}</Avatar>
                 <Typography.Text className='username'>{displayName}</Typography.Text>
             </div>
-            <Button ghost onClick={() => auth.signOut()} icon={<LogoutOutlined />}>Log out</Button>
         </WrapperStyle>
     );
 }
