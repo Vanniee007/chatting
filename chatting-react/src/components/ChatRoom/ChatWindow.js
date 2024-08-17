@@ -1,4 +1,4 @@
-import { UploadOutlined, UserAddOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, BackwardFilled, UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Alert, Avatar, Button, Form, Input, Tooltip, Upload } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -55,7 +55,8 @@ const FormStyled = styled(Form)`
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: px;
+    padding: 2px;
+    /* height: 80px; */
     border: 1px solid rgb(230,230,230);
 
     .ant-form-item{
@@ -76,6 +77,7 @@ export default function ChatWindow() {
     const { uid, photoURL, displayName } = useContext(AuthContext)
     const [inputValue, setInputValue] = useState('')
     const inputRef = useRef(null); // Ref for the input field
+    const { isSmallScreen, isCollapse, setIsCollapse } = useContext(AppContext)
 
     const handleInputChange = (e) => {
         setInputValue(e.target.value)
@@ -118,20 +120,11 @@ export default function ChatWindow() {
     const messagesFromFirestore = useFirestore("messages", condition);
 
     const messages = React.useMemo(() => {
-        console.log({ messagesFromFirestore });
+        // console.log({ messagesFromFirestore });
 
         return [...messagesFromFirestore].sort((a, b) => {
             return (a.createdAt?.seconds * 1000 + a.createdAt?.nanoseconds / 1000000)
                 - (b.createdAt?.seconds * 1000 + b.createdAt?.nanoseconds / 1000000);
-            // const dateA = a.createdAt
-            //     ? new Date(a.createdAt.seconds * 1000 + a.createdAt.nanoseconds / 1000000)
-            //     : new Date(0); // Default to a very old date if createdAt is null
-
-            // const dateB = b.createdAt
-            //     ? new Date(b.createdAt.seconds * 1000 + b.createdAt.nanoseconds / 1000000)
-            //     : new Date(0); // Default to a very old date if createdAt is null
-
-            // return dateA - dateB;
         });
     }, [messagesFromFirestore]);
 
@@ -195,13 +188,14 @@ export default function ChatWindow() {
         // );
     };
 
-    console.log(messages)
+    // console.log(messages)
     useEffect(() => {
         if (messageListRef?.current) {
             messageListRef.current.scrollTop =
                 messageListRef.current.scrollHeight + 50;
         }
     }, [messages]);
+
     let previousDate = null;
     let previousAuthor = null;
 
@@ -210,9 +204,18 @@ export default function ChatWindow() {
             selectedRoom.id ? (
                 <>
                     <HeaderStyled>
-                        <div className="header__info">
-                            <p className="header__title">{selectedRoom.name}</p>
-                            <span className="header__description">{selectedRoom.description}</span>
+                        <div style={{ display: 'flex' }}>
+                            {isSmallScreen ?
+                                <Button style={{ height: '56px', width: '56px', marginLeft: '-16px', border: 'transparent', background: 'transparent' }}
+                                    icon={<ArrowLeftOutlined />}
+                                    onClick={() => setIsCollapse(false)}>
+                                </Button>
+                                : ""
+                            }
+                            <div className="header__info">
+                                <p className="header__title">{selectedRoom.name}</p>
+                                <span className="header__description">{selectedRoom.description}</span>
+                            </div>
                         </div>
                         <ButtonGroupStyled>
                             <Button type="text" icon={<UserAddOutlined />} onClick={() => setIsInviteMemberVisible(true)}>
@@ -232,7 +235,7 @@ export default function ChatWindow() {
                             </Avatar.Group>
                         </ButtonGroupStyled>
                     </HeaderStyled>
-                    <ContentStyled>
+                    <ContentStyled >
                         <MessageListStyled ref={messageListRef}>
                             {messages.map((mes, index) => {
                                 const { isPhoto, text, displayName, createdAt, photoURL, fileURL, uid, id } = mes;
@@ -271,7 +274,9 @@ export default function ChatWindow() {
                                 );
                             })}
                         </MessageListStyled>
-                        <FormStyled form={form}>
+                        <FormStyled form={form}
+                            style={{ backgroundColor: "red" }}
+                        >
                             <Upload style={{ border: '10px' }}
                                 customRequest={handleUpload}
                                 showUploadList={false}

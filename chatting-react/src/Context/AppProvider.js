@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AuthContext } from "./AuthProvider";
 import useFirestore from "../hooks/useFirestore";
 
@@ -11,7 +11,18 @@ export default function AppProvider({ children }) {
     const [isJoinRoomVisible, setIsJoinRoomVisible] = useState(false);
     const [selectedRoomId, setSelectedRoomId] = useState('');
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
+    const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 768);
+    const [isCollapse, setIsCollapse] = useState(false);
 
+    useEffect(() => {
+        const handleResize = () => {
+            setIsSmallScreen(window.innerWidth < 768);
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const roomsCondition = React.useMemo(() => {
         return {
@@ -52,6 +63,9 @@ export default function AppProvider({ children }) {
             isInviteMemberVisible, setIsInviteMemberVisible,
             isJoinRoomVisible, setIsJoinRoomVisible,
             isSidebarVisible, setIsSidebarVisible,
+
+            isSmallScreen, setIsSmallScreen,
+            isCollapse, setIsCollapse,
         }}>
             {children}
         </AppContext.Provider>

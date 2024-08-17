@@ -56,6 +56,13 @@ const WrapperStyled = styled.div`
     }
 `;
 
+const ImageStyled = styled(Image)`
+    border:transparent;
+    background-color:red;
+    max-width: '400px';
+    height:100px;
+    max-height: '100%';
+`;
 function formatDate(seconds) {
     let formattedDate = '';
 
@@ -121,9 +128,11 @@ export default function Message({ isPhoto, text, displayName, createdAt, photoUR
                                     <Image
                                         src={fileURL}
                                         alt={text || 'Image preview'}
-                                        // preview={false} // Nếu không muốn hiển thị ảnh lớn hơn khi nhấp vào
-                                        style={{ maxWidth: '100%', maxHeight: '300px' }} // Thay đổi kích thước ảnh nếu cần
+                                        style={{ maxHeight: '500px', maxWidth: '100%' }}
+                                    // preview={false} // Nếu không muốn hiển thị ảnh lớn hơn khi nhấp vào
                                     />
+
+
                                 ) :
                                 (
                                     fileURL ? (

@@ -77,7 +77,7 @@ const MessagePreviewStyled = styled.div`
 `;
 
 export default function RoomList() {
-    const { rooms, setIsAddRoomVisible, setIsJoinRoomVisible, setSelectedRoomId, selectedRoomId } = useContext(AppContext); // Access state from context
+    const { rooms, setIsAddRoomVisible, setIsCollapse, setIsJoinRoomVisible, setSelectedRoomId, selectedRoomId } = useContext(AppContext); // Access state from context
     const handleAddRoom = () => {
         setIsAddRoomVisible(true);
     };
@@ -85,6 +85,12 @@ export default function RoomList() {
     const handleJoinRoom = () => {
         setIsJoinRoomVisible(true);
     };
+    const handleClickChat = (id) => {
+        setSelectedRoomId(id)
+        // console.log('sadasdsa', id);
+
+        // setIsCollapse(true)
+    }
     // const { text, displayName } = rooms.latestMessage;
 
 
@@ -98,7 +104,7 @@ export default function RoomList() {
                         onClick={() => setSelectedRoomId(room.id)}
                         isSelected={room.id === selectedRoomId}
                     >
-                        <RoomInfoStyled>
+                        <RoomInfoStyled onClick={() => setIsCollapse(true)}>
                             <AvatarStyled src="https://lh3.googleusercontent.com/a/ACg8ocLXtZr3zNjkfozZfF3MkHzTEk1IVx84unlBK_C6i01YLQRAzJbJ=s96-c">
                             </AvatarStyled>
                             <div>
