@@ -1,4 +1,4 @@
-import { ArrowLeftOutlined, BackwardFilled, UploadOutlined, UserAddOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, BackwardFilled, PictureOutlined, SendOutlined, UploadOutlined, UserAddOutlined } from "@ant-design/icons";
 import { Alert, Avatar, Button, Form, Input, Tooltip, Upload } from "antd";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -275,24 +275,27 @@ export default function ChatWindow() {
                             })}
                         </MessageListStyled>
                         <FormStyled form={form}
-                            style={{ backgroundColor: "red" }}
                         >
                             <Upload style={{ border: '10px' }}
                                 customRequest={handleUpload}
                                 showUploadList={false}
                             >
-                                <Button icon={<UploadOutlined />}></Button>
+                                <Button style={{ height: "45px", width: '45px' }} icon={<PictureOutlined />}></Button>
                             </Upload>
-                            <Form.Item name="message" style={{ margin: '0px 5px 0px 5px ' }}>
+                            <Form.Item name="message"
+                                style={{
+                                    margin: '0px 2px 0px 2px ',
+                                }}>
                                 <Input
                                     ref={inputRef}
                                     onChange={handleInputChange}
                                     onPressEnter={handleOnSubmit}
                                     placeholder="Type message"
+                                    style={{ height: "45px" }}
                                     autoComplete="off" />
                             </Form.Item>
 
-                            <Button onClick={handleOnSubmit}>Send</Button>
+                            <Button style={{ height: "45px", width: '45px' }} icon={<SendOutlined />} onClick={handleOnSubmit}></Button>
                         </FormStyled>
                     </ContentStyled>
                 </>)
@@ -304,5 +307,5 @@ export default function ChatWindow() {
                     closable
                 />)
         }
-    </WrapperStyle>
+    </WrapperStyle >
 }

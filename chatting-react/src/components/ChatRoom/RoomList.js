@@ -28,21 +28,24 @@ const RoomListContainer = styled.div`
     display: flex;
     height:100%;
     width: 100%;
-    overflow-y: scroll;
+    overflow-y: auto;
+    flex-direction: column;    
+    scrollbar-color:grey transparent;
+    /* scroll-snap-align:none; */
+    /* scrollbar-width: none;  */
 
-    flex-direction: column;
     align-items: flex-start; /* Align items to the left */
 `;
 
 const AvatarStyled = styled(Avatar)`
-margin: 2px 10px;
+    margin: 2px 10px;
     width: 45px; 
     height: 45px;
     /* padding:5px; */
 `;
 
 const RoomInfoStyled = styled.div`
-  display: flex; /* Use flexbox layout */
+    display: flex; /* Use flexbox layout */
     align-items: center; /* Center items vertically */
     /* margin-left: 20px; Adjust margin as needed */
     
@@ -65,7 +68,7 @@ const ButtonGroupStyled = styled.div`
 const ButtonStyled = styled(Button)`
     width: 75px; 
     color: black; 
-    background-color: black;
+    background-color: transparent;
     &:hover {
         background-color: #333;
     }
@@ -91,6 +94,13 @@ export default function RoomList() {
 
         // setIsCollapse(true)
     }
+    const roomsOrdered = React.useMemo(() => {
+
+        return [...rooms].sort((a, b) => {
+            return -(a.updatedAt?.seconds * 1000 + a.updatedAt?.nanoseconds / 1000000)
+                + (b.updatedAt?.seconds * 1000 + b.updatedAt?.nanoseconds / 1000000);
+        });
+    }, [rooms]);
     // const { text, displayName } = rooms.latestMessage;
 
 
@@ -98,15 +108,20 @@ export default function RoomList() {
         <ContainerStyled>
 
             <RoomListContainer>
-                {rooms.map(room => (
+                {roomsOrdered.map(room => (
                     <LinkStyled
                         key={room.id}
                         onClick={() => setSelectedRoomId(room.id)}
                         isSelected={room.id === selectedRoomId}
                     >
                         <RoomInfoStyled onClick={() => setIsCollapse(true)}>
-                            <AvatarStyled src="https://lh3.googleusercontent.com/a/ACg8ocLXtZr3zNjkfozZfF3MkHzTEk1IVx84unlBK_C6i01YLQRAzJbJ=s96-c">
+
+                            <AvatarStyled
+                                src={room.photoURL ? room.photoURL : "https://cdn-icons-png.flaticon.com/512/4807/4807598.png"}
+                            >
+                                gr
                             </AvatarStyled>
+
                             <div>
                                 <Typography.Text strong>{room.name}</Typography.Text>
 
@@ -125,20 +140,18 @@ export default function RoomList() {
             </RoomListContainer>
             <ButtonGroupStyled>
                 <ButtonStyled
-                    ghost
                     onClick={handleAddRoom}
                     icon={<PlusSquareOutlined />}
                 >
                     {/* Create */}
                 </ButtonStyled>
                 <ButtonStyled
-                    ghost
                     onClick={handleJoinRoom}
                     icon={<UsergroupAddOutlined />}
                 >
                     {/* Join */}
                 </ButtonStyled>
-                <ButtonStyled ghost
+                <ButtonStyled
                     onClick={() => auth.signOut()}
                     icon={<LogoutOutlined />}
                 >
