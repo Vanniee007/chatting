@@ -14,6 +14,7 @@ const MainContent = styled.div`
     height: 100%;
     overflow: auto; /* Allow scrolling if needed */
 `;
+// new command
 
 export default function ChatRoom() {
     const { isSmallScreen, isCollapse } = useContext(AppContext)
